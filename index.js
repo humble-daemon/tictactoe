@@ -1,5 +1,6 @@
 function Board(){
     const data = [["", "", ""], ["", "", ""], ["", "", ""]];
+
     const placeSymbol = function(position, symbol){
         const result = validatePosition(position);
         if(result){
@@ -8,6 +9,7 @@ function Board(){
             return true;
         }
     }
+
     const validatePosition = function(position){
         let int = parseInt(position);
         if(isNaN(int))
@@ -19,9 +21,11 @@ function Board(){
         if(data[row][col]==="")
             return {row, col};
     }
+
     const getData = function(){
         return data;
     }
+
     return {placeSymbol, getData}
 }
 
@@ -29,9 +33,8 @@ function Player(name, symbol){
     this.name = name;
     this.symbol = symbol;
     this.ownSymbol = function(symbol){
-        if(this.symbol === symbol){
+        if(this.symbol === symbol)
             return this;
-        }
     }
 }
 
@@ -96,7 +99,7 @@ function Game(p1, p2){
 function ScreenControl(){
     const game = Game(new Player("player 1", "X"), new Player("player 2", "O"));
     const boardDOM = document.querySelector("#board");
-
+    const restart = document.querySelector("#restart");
 
     const renderBoard = function(){
         boardDOM.innerHTML = "";
@@ -113,30 +116,29 @@ function ScreenControl(){
             }
         }
     }
-    const eventHandler = (e)=>{
+    const tileEventHandler = (e)=>{
         if(!e.target.dataset.index)return;
         const {continuePlaying, message} = game.play(e.target.dataset.index);
         renderBoard();
-        if(!continuePlaying){
-            // do something 
-            console.log(message);
+        if(!continuePlaying)
             endGame(message);
-        }
     }
 
-    const startUp = function(){
-        //code to get the player name and symbol
-    }
 
     const endGame = function(message){
-
+        const p = document.querySelector("#message");
+        const modal = document.querySelector("#end");
+        p.innerText = message;
+        modal.showModal();
     }
 
 
-
+    const startUp = function(){
+        renderBoard();
+        boardDOM.addEventListener("click",tileEventHandler);
+        restart.addEventListener("click", ()=> window.location.reload());
+    }
     startUp();
-    renderBoard();
-    boardDOM.addEventListener("click",eventHandler);
 }
 
 
