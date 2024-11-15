@@ -8,22 +8,57 @@
 
 html, body, main{
     height: 100%;
+    background-color: black;
+    color: white;
+    --free : hsl(155, 79%, 43%);
+    --occupied : hsl(212, 79%, 43%);
+    --danger : hsl(0, 79%, 43%);
+
 }
 main{
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     font-family: "Poppins", serif;
+    flex-direction: column;
+    gap: 20px;
 }
 .tile{
     height: 200px;
     width: 200px;
-    border: solid 2px red;
+    border: solid 2px rgba(0, 98, 255, 0);
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 4rem;
+}
 
+.tile:hover {
+    background-color: var(--free);
+    color: #050801;
+    box-shadow:
+      0 0 5px var(--free),
+      0 0 25px var(--free),
+      0 0 50px var(--free),
+      0 0 200px var(--free);
+  }
+.tile.occupied:hover{
+    background-color: var(--occupied);
+    color: #050801;
+    box-shadow:
+      0 0 5px var(--occupied),
+      0 0 25px var(--occupied),
+      0 0 50px var(--occupied),
+      0 0 200px var(--occupied);
+}
+.tile.occupied:active{
+    background-color: var(--danger);
+    color: #050801;
+    box-shadow:
+      0 0 5px var(--danger),
+      0 0 25px var(--danger),
+      0 0 50px var(--danger),
+      0 0 200px var(--danger);
 }
 
 #board{

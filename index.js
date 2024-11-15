@@ -28,11 +28,17 @@ function Board(){
 function Player(name, symbol){
     this.name = name;
     this.symbol = symbol;
+    this.ownSymbol = function(symbol){
+        if(this.symbol === symbol){
+            return this;
+        }
+    }
 }
 
 function Game(p1, p2){
     const board = Board();
     let currentPlayer = p1;
+    let movesLeft = 9;
     const switchPlayer = function(){
         currentPlayer === p1? currentPlayer = p2:currentPlayer = p1;
     }
@@ -40,13 +46,49 @@ function Game(p1, p2){
     const play = function(position){
         const result = board.placeSymbol(position, getCurrentPlayer().symbol);
         if(result){
+            movesLeft --;
+            let {winner} = checkWinner();
+            if(winner)
+                return {message : `${winner.name} won!`};
+            if(checkDraw())
+                return {message : "the game ended in a draw"};
             switchPlayer();
         }
+        return {continuePlaying : true}
     }
     const getBoardData = function(){
         return board.getData();
     }
-
+    const checkWinner = function(){
+        const boardData = getBoardData();
+        for(let i =0; i < 3; i ++){
+            let a = [];
+            let b = [];
+            for(let j =0; j < 3; j ++){
+                a.push(boardData[i][j]);
+                b.push(boardData[j][i]);
+            }
+            if(a[0] === a[1] && a[1] === a[2] && a[0]) 
+                return {winner : p1.ownSymbol(a[0]) || p2.ownSymbol(a[0])};
+            if(b[0] === b[1] && b[1] === b[2] && b[0]) 
+                return {winner : p1.ownSymbol(b[0]) || p2.ownSymbol(b[0])}; 
+        }
+        let a = [];
+        let b = [];
+        for(let i = 0; i < 3; i ++){
+            a.push(boardData[i][i]);
+            b.push(boardData[i][2 - i]);
+        }
+        if(a[0] === a[1] && a[1] === a[2] && a[0]) 
+            return {winner : p1.ownSymbol(a[0]) || p2.ownSymbol(a[0])};
+        if(b[0] === b[1] && b[1] === b[2] && b[0]) 
+            return {winner : p1.ownSymbol(b[0]) || p2.ownSymbol(b[0])}; 
+        return {winner : null};
+        
+    }
+    const checkDraw = function(){
+        return movesLeft === 0;
+    }
     return {play, getBoardData}
 }
 
@@ -65,21 +107,36 @@ function ScreenControl(){
                 tile.dataset.index = i;
                 tile.classList.add("tile");
                 tile.innerText = game.getBoardData()[a][b];
+                if(tile.innerText !== "")tile.classList.add("occupied");
                 boardDOM.appendChild(tile);
                 i ++;
             }
         }
     }
-    const addEventListener = function(){
-        boardDOM.addEventListener("click", (e)=>{
-            if(!e.target.dataset.index)return;
-            game.play(e.target.dataset.index);
-            renderBoard();
-        })
+    const eventHandler = (e)=>{
+        if(!e.target.dataset.index)return;
+        const {continuePlaying, message} = game.play(e.target.dataset.index);
+        renderBoard();
+        if(!continuePlaying){
+            // do something 
+            console.log(message);
+            endGame(message);
+        }
     }
 
+    const startUp = function(){
+        //code to get the player name and symbol
+    }
+
+    const endGame = function(message){
+
+    }
+
+
+
+    startUp();
     renderBoard();
-    addEventListener();
+    boardDOM.addEventListener("click",eventHandler);
 }
 
 
